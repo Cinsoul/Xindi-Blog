@@ -1,0 +1,13 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Obsidian squircle background matching 41.JPG -->
+  <rect width="512" height="512" rx="118" fill="#0A0D12" />
+  <rect x="1.5" y="1.5" width="509" height="509" rx="116.5" stroke="rgba(255, 255, 255, 0.08)" stroke-width="3" />
+
+  <!-- Pure Geometric Arthera "AA" Dual Chevron Monogram from 41.JPG -->
+  <g fill="#F5F5F3">
+    <!-- Left Chevron (A1) -->
+    <polygon points="196,136 244,136 330,364 288,364 220,184 152,364 110,364" />
+    <!-- Right Chevron (A2) -->
+    <polygon points="268,136 316,136 402,364 360,364 292,184 224,364 182,364" />
+  </g>
+</svg>
