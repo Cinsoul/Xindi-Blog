@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { DEFAULT_HERO_AVATAR, DEFAULT_ABOUT_AVATAR, DEFAULT_FOOTER_AVATAR } from '../data/defaultAvatars';
+
+const getFallbackAvatar = (key: string): string => {
+  if (key === 'hero') return DEFAULT_HERO_AVATAR;
+  if (key === 'about') return DEFAULT_ABOUT_AVATAR;
+  if (key === 'footer') return DEFAULT_FOOTER_AVATAR;
+  return `./${key}-3d-avatar.png`;
+};
 
 // Hook to subscribe to user uploaded or custom 3D character images
 export const useAvatarImage = (key: string) => {
@@ -8,14 +16,14 @@ export const useAvatarImage = (key: string) => {
       const stored = localStorage.getItem(`custom_${key}_avatar`);
       if (stored) return stored;
     }
-    // Default to static file in public/ if available
-    return `./${key}-3d-avatar.png`;
+    // Default to embedded avatar for guaranteed instant rendering on Vercel / GitHub
+    return getFallbackAvatar(key);
   });
 
   useEffect(() => {
     const handleUpdate = () => {
       const stored = localStorage.getItem(`custom_${key}_avatar`);
-      setImgUrl(stored || `./${key}-3d-avatar.png`);
+      setImgUrl(stored || getFallbackAvatar(key));
     };
 
     window.addEventListener('avatar-storage-updated', handleUpdate);
