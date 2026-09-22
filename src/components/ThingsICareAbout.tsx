@@ -92,6 +92,8 @@ const renderIcon = (type: CareItem['iconType']) => {
 };
 
 export const ThingsICareAbout: React.FC = () => {
+  const [failedImages, setFailedImages] = React.useState<Record<string, boolean>>({});
+
   const coffeeImg = useAvatarImage('coffee');
   const photoImg = useAvatarImage('photo');
   const catImg = useAvatarImage('cat');
@@ -102,6 +104,10 @@ export const ThingsICareAbout: React.FC = () => {
     photography: photoImg,
     cats: catImg,
     games: laptopImg,
+  };
+
+  const handleImgError = (id: string) => {
+    setFailedImages((prev) => ({ ...prev, [id]: true }));
   };
 
   return (
@@ -137,10 +143,11 @@ export const ThingsICareAbout: React.FC = () => {
                   >
                     {/* Centered Outline Icon or 3D Avatar Sticker */}
                     <div className="mb-2 flex items-center justify-center h-9 w-9">
-                      {avatar ? (
+                      {avatar && !failedImages[item.id] ? (
                         <img
                           src={avatar}
                           alt={item.title}
+                          onError={() => handleImgError(item.id)}
                           className="w-full h-full object-contain drop-shadow-sm group-hover:scale-115 transition-transform duration-200"
                         />
                       ) : (

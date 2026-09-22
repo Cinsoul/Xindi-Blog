@@ -1,12 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { DEFAULT_HERO_AVATAR, DEFAULT_ABOUT_AVATAR, DEFAULT_FOOTER_AVATAR } from '../data/defaultAvatars';
+import {
+  DEFAULT_HERO_AVATAR,
+  DEFAULT_ABOUT_AVATAR,
+  DEFAULT_FOOTER_AVATAR,
+  DEFAULT_COFFEE_AVATAR,
+  DEFAULT_PHOTO_AVATAR,
+  DEFAULT_CAT_AVATAR,
+  DEFAULT_LAPTOP_AVATAR,
+} from '../data/defaultAvatars';
 
-const getFallbackAvatar = (key: string): string => {
+const getFallbackAvatar = (key: string): string | null => {
   if (key === 'hero') return DEFAULT_HERO_AVATAR;
   if (key === 'about') return DEFAULT_ABOUT_AVATAR;
   if (key === 'footer') return DEFAULT_FOOTER_AVATAR;
-  return `./${key}-3d-avatar.png`;
+  if (key === 'coffee') return DEFAULT_COFFEE_AVATAR;
+  if (key === 'photo') return DEFAULT_PHOTO_AVATAR;
+  if (key === 'cat') return DEFAULT_CAT_AVATAR;
+  if (key === 'laptop') return DEFAULT_LAPTOP_AVATAR;
+  return null;
 };
 
 // Hook to subscribe to user uploaded or custom 3D character images

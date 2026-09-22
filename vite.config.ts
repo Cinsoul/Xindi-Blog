@@ -48,7 +48,7 @@ export default defineConfig(() => {
     plugins: [react(), tailwindcss(), saveAvatarPlugin()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': path.resolve(process.cwd(), '.'),
       },
     },
     server: {
