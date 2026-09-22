@@ -20,7 +20,7 @@ const saveAvatarPlugin = () => ({
             }
             const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, '');
             const filename = `${key}-3d-avatar.png`;
-            const publicDir = path.resolve(__dirname, 'public');
+            const publicDir = path.resolve(process.cwd(), 'public');
             if (!fs.existsSync(publicDir)) {
               fs.mkdirSync(publicDir, { recursive: true });
             }
