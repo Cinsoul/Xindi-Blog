@@ -5,15 +5,17 @@ import { motion, AnimatePresence } from 'motion/react';
 export const useAvatarImage = (key: string) => {
   const [imgUrl, setImgUrl] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem(`custom_${key}_avatar`);
+      const stored = localStorage.getItem(`custom_${key}_avatar`);
+      if (stored) return stored;
     }
-    return null;
+    // Default to static file in public/ if available
+    return `./${key}-3d-avatar.png`;
   });
 
   useEffect(() => {
     const handleUpdate = () => {
       const stored = localStorage.getItem(`custom_${key}_avatar`);
-      setImgUrl(stored || null);
+      setImgUrl(stored || `./${key}-3d-avatar.png`);
     };
 
     window.addEventListener('avatar-storage-updated', handleUpdate);
@@ -28,6 +30,7 @@ export const useAvatarImage = (key: string) => {
 // ==========================================
 export const HeroAvatarScene: React.FC = () => {
   const customImg = useAvatarImage('hero');
+  const [imgFailed, setImgFailed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // 3D Perspective Tilt & Specular Sheen States
@@ -258,11 +261,12 @@ export const HeroAvatarScene: React.FC = () => {
             }}
             className="w-full relative flex items-end justify-center"
           >
-            {customImg ? (
+            {customImg && !imgFailed ? (
               <div className="w-full relative flex items-end justify-center pt-8">
                 <img
                   src={customImg}
                   alt="Hero 3D Character Desk Scene"
+                  onError={() => setImgFailed(true)}
                   className="w-full h-auto max-h-[520px] object-contain rounded-3xl drop-shadow-2xl select-none"
                 />
               </div>
@@ -797,6 +801,7 @@ export const HeroAvatarScene: React.FC = () => {
 // ==========================================
 export const AboutWinkAvatar: React.FC = () => {
   const customImg = useAvatarImage('about');
+  const [imgFailed, setImgFailed] = useState(false);
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -872,10 +877,11 @@ export const AboutWinkAvatar: React.FC = () => {
         style={{ transformStyle: 'preserve-3d' }}
         className="w-full h-full relative flex items-center justify-center"
       >
-        {customImg ? (
+        {customImg && !imgFailed ? (
           <img
             src={customImg}
             alt="About Wink Avatar"
+            onError={() => setImgFailed(true)}
             className="w-full h-full object-contain drop-shadow-xl rounded-2xl"
           />
         ) : (
@@ -1013,6 +1019,7 @@ export const AboutWinkAvatar: React.FC = () => {
 // ==========================================
 export const FooterHeadphoneAvatar: React.FC = () => {
   const customImg = useAvatarImage('footer');
+  const [imgFailed, setImgFailed] = useState(false);
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -1099,10 +1106,11 @@ export const FooterHeadphoneAvatar: React.FC = () => {
         style={{ transformStyle: 'preserve-3d' }}
         className="w-full h-full relative flex items-center justify-center"
       >
-        {customImg ? (
+        {customImg && !imgFailed ? (
           <img
             src={customImg}
             alt="Footer Headphone Avatar"
+            onError={() => setImgFailed(true)}
             className="w-full h-full object-contain drop-shadow-xl rounded-2xl"
           />
         ) : (

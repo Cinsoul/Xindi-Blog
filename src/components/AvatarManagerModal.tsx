@@ -12,6 +12,9 @@ import {
   Wand2,
   Smile,
   Layers,
+  Download,
+  CloudUpload,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface AvatarManagerModalProps {
@@ -147,17 +150,65 @@ export const AvatarManagerModal: React.FC<AvatarManagerModalProps> = ({
         setIsProcessing(false);
         onAvatarsUpdated?.();
         window.dispatchEvent(new Event('avatar-storage-updated'));
+
+        // Auto save hero to server public/
+        if (heroCrop) {
+          saveToDisk('hero', heroCrop);
+        }
       };
       img.src = src;
     };
     reader.readAsDataURL(file);
   };
 
+  const saveToDisk = async (key: string, dataUrl: string) => {
+    try {
+      await fetch('/api/save-avatar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, dataUrl }),
+      });
+    } catch {
+      // Ignore in static deployment
+    }
+  };
+
+  // Sync current avatars to public folder on disk
+  const handleSyncToDisk = async () => {
+    setIsProcessing(true);
+    let count = 0;
+    for (const [key, val] of Object.entries(avatars)) {
+      if (val && val.startsWith('data:image/')) {
+        await saveToDisk(key, val);
+        count++;
+      }
+    }
+    setIsProcessing(false);
+    setStatusMessage(`🎉 成功同步 ${count} 个形象至项目 public/ 目录！推送到 GitHub 后 Vercel 全网永久生效！`);
+  };
+
+  // Download hero image as PNG
+  const handleDownloadHero = () => {
+    const heroImg = avatars.hero || localStorage.getItem('custom_hero_avatar');
+    if (!heroImg) {
+      setStatusMessage('当前没有可下载的自定义 3D 头像');
+      return;
+    }
+    const a = document.createElement('a');
+    a.href = heroImg;
+    a.download = 'hero-3d-avatar.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setStatusMessage('已开始下载 hero-3d-avatar.png！可存入项目 public 目录');
+  };
+
   // Set a specific pose as the Hero avatar
   const setAsHero = (base64: string, name: string) => {
     localStorage.setItem('custom_hero_avatar', base64);
+    saveToDisk('hero', base64);
     loadAvatars();
-    setStatusMessage(`已将「${name}」设为主页 Hero 形象！`);
+    setStatusMessage(`已将「${name}」设为主页 Hero 形象并固化到本地文件！`);
     onAvatarsUpdated?.();
     window.dispatchEvent(new Event('avatar-storage-updated'));
   };
@@ -479,14 +530,34 @@ export const AvatarManagerModal: React.FC<AvatarManagerModalProps> = ({
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-3.5 mt-3 border-t border-black/[0.06] flex items-center justify-between shrink-0">
-            <button
-              onClick={handleResetAll}
-              className="text-xs text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium flex items-center gap-1"
-            >
-              <RotateCcw size={12} />
-              <span>清除/重置形象</span>
-            </button>
+          <div className="pt-3.5 mt-3 border-t border-black/[0.06] flex flex-wrap items-center justify-between gap-2.5 shrink-0">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleResetAll}
+                className="text-xs text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium flex items-center gap-1 px-2 py-1"
+              >
+                <RotateCcw size={12} />
+                <span>清除/重置形象</span>
+              </button>
+
+              <button
+                onClick={handleSyncToDisk}
+                title="将当前 3D 形象直接写入项目 public/ 目录，推送到 GitHub 后 Vercel 和他人访问永远可见！"
+                className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#2F6BFF] text-xs font-semibold border border-blue-200/70 flex items-center gap-1.5 transition-all shadow-xs"
+              >
+                <CloudUpload size={14} />
+                <span>固化到项目(Vercel永久生效)</span>
+              </button>
+
+              <button
+                onClick={handleDownloadHero}
+                title="将当前 3D 主页形象下载为 hero-3d-avatar.png 文件"
+                className="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 text-[#374151] text-xs font-semibold border border-gray-200 flex items-center gap-1.5 transition-all"
+              >
+                <Download size={14} />
+                <span>下载 3D PNG</span>
+              </button>
+            </div>
 
             <button
               onClick={onClose}

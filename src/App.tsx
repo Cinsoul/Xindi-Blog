@@ -24,6 +24,26 @@ export default function App() {
   const [avatarModalOpen, setAvatarModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
+    // Auto-sync 3D avatars stored in browser localStorage into public/ folder
+    const syncAvatarsToDisk = async () => {
+      const keys = ['hero', 'about', 'footer', 'coffee', 'photo', 'cat', 'laptop', 'standing', 'smile', 'laugh'];
+      for (const k of keys) {
+        const dataUrl = localStorage.getItem(`custom_${k}_avatar`);
+        if (dataUrl && dataUrl.startsWith('data:image/')) {
+          try {
+            await fetch('/api/save-avatar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ key: k, dataUrl }),
+            });
+          } catch {
+            // Ignore in environments where /api/save-avatar is not available
+          }
+        }
+      }
+    };
+    syncAvatarsToDisk();
+
     const handleOpenAvatar = () => setAvatarModalOpen(true);
     const handleKeyDown = (e: KeyboardEvent) => {
       // Secret hotkey Alt+A or Option+A to reopen if ever needed
